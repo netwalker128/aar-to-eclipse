@@ -35,8 +35,11 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt')
         }
     }
+    lintOptions {
+        abortOnError false
+    }
 }
 configurations.embed.transitive = true
 dependencies {
-    embed "com.huawei.agconnect:agconnect-auth:1.0.0.301"
+    embed "com.huawei.agconnect:agconnect-crash:1.2.1.300"
 }
