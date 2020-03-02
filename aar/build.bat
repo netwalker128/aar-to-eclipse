@@ -1,2 +1,2 @@
 rd -r eclipse
-gradlew clean assembleDebug
+gradlew clean assembleRelease
