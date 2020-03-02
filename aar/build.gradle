@@ -1,0 +1,42 @@
+buildscript {
+    repositories {
+        maven { url file('../repo').toURI() }
+        jcenter()
+        google()
+        maven { url "https://plugins.gradle.org/m2/" }
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.5.0'
+        classpath 'com.jojo:aar2eclipse:1.0'
+    }
+}
+
+allprojects {
+    repositories {
+        maven { url 'https://developer.huawei.com/repo' }
+        google()
+        jcenter()
+    }
+}
+apply plugin: 'com.android.library'
+apply plugin: 'com.jojo.aar2eclipse'
+android {
+    compileSdkVersion 29
+    buildToolsVersion "29.0.2"
+    defaultConfig {
+        minSdkVersion 19
+        targetSdkVersion 29
+        versionCode 1
+        versionName "1.0"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt')
+        }
+    }
+}
+configurations.embed.transitive = true
+dependencies {
+    embed "com.huawei.agconnect:agconnect-auth:1.0.0.301"
+}

@@ -1,0 +1,45 @@
+apply plugin: 'maven'
+
+group = rootProject.ext.groupId
+version = rootProject.ext.version
+artifactId = rootProject.ext.artifactId
+
+// 生成空的javadoc、sources规避构建效率问题
+artifacts {
+    File emptyZip = new File(project.rootDir, ".empty.jar");
+    if (!emptyZip.exists()) {
+        byte[] zipHead = [0x50, 0x4b, 0x05, 0x06, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        emptyZip.write(new String(zipHead))
+    }
+    archives (emptyZip) { classifier 'javadoc' }
+    archives (emptyZip) { classifier 'sources' }
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            def repositoryUrl = file(localMavenDir+'repo').toURI()
+            def snapshotRepositoryUrl = file(localMavenDir+'repo').toURI()
+
+            def mavenUsername = System.getenv('mavenUsername')
+            def mavenPassword = System.getenv('mavenPassword')
+            repository(url: repositoryUrl) {
+                authentication(userName: mavenUsername, password: mavenPassword)
+            }
+            snapshotRepository(url: snapshotRepositoryUrl) {
+                authentication(userName: mavenUsername, password: mavenPassword)
+            }
+            pom.project {
+                groupId project.group
+                version project.version
+                artifactId project.artifactId
+
+                def gitUrl = project.findProperty('gitUrl')
+                def branch = project.findProperty('branch')
+                def commitId = project.findProperty('commitId')
+                def sourceTag = "\ngitUrl: ${gitUrl}\nbranch: ${branch}\ncommitId: ${commitId}\n  "
+                description(sourceTag)
+            }
+        }
+    }
+}
